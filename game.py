@@ -29,6 +29,7 @@ class Student(pygame.sprite.Sprite):
 
 S1 = Student()
 
+# кнопки меню
 unpbplay = pygame.image.load("buttons/unpbplay.png")
 unpbexit = pygame.image.load("buttons/unpbexit.png")
 unpbinfo = pygame.image.load("buttons/unpbinfo.png")
@@ -68,32 +69,21 @@ pbexit_small_rect.center = (750,300)
 pbinfo_small = pygame.transform.scale(pbinfo,(350,150))
 pbinfo_small_rect = pbinfo_small.get_rect()
 pbinfo_small_rect.center = (750,450)
-# стоит ли использовать transform scale или лучше вручную менять размер изображений?
 
 screen = pygame.display.set_mode((WIDTH,HEIGHT))
 clock = pygame.time.Clock()
 
-# Характеристики персонажа
-knowledge = 0   # знания
-sleep = 100   # сон
-satiety =  100    # сытость
-happiness = 100   # счастье
-
-radius = 30
-x = 400
-y = 300
-
 x_margin_for_bars = 30
 
 knowledge_bar = Bar(x_margin_for_bars,10,200,25,100,BROWN)
-knowledge_bar.unit = 100
+knowledge_bar.unit = 0
 sleep_bar = Bar(x_margin_for_bars,45,200,25,100,BLUE)
 satiety_bar = Bar(x_margin_for_bars,80,200,25,100,RED)
 happiness_bar = Bar(x_margin_for_bars,115,200,25,100,YELLOW)
 
 gaming = False
 
-fl = 0
+
 while True:
     clock.tick(FPS)
     pressed = pygame.key.get_pressed() 
@@ -102,6 +92,32 @@ while True:
         if event.type == pygame.QUIT or pressed[pygame.K_ESCAPE]:
             pygame.quit()
             sys.exit()
+        if S1.rect.colliderect(kbtu_small_rect):
+            if knowledge_bar.unit<100:
+                if knowledge_bar.unit+40>=100:
+                    knowledge_bar.unit = 100
+                    screen.fill("red")
+                    pygame.display.flip()
+                    time.sleep(2)
+                    pygame.quit()
+                    sys.exit()
+                else:
+                    knowledge_bar.unit += 40
+                if sleep_bar.unit>=2:
+                    sleep_bar.unit-=2
+                if satiety_bar.unit>=2:
+                    satiety_bar.unit-=2
+                if happiness_bar.unit>=2:
+                    happiness_bar.unit-=2 
+
+            screen.blit(dormitory_big,dormitory_big_rect)
+            pygame.display.flip()
+            
+            
+               
+            S1.rect.center = (625, HEIGHT//2)   
+
+            time.sleep(2) 
     
 
     #добавляю выбор кнопок мышкой (для info пока не добавлял)
@@ -117,34 +133,21 @@ while True:
         
     if gaming:
 
-        if pressed[pygame.K_UP] and y>radius and not (x<=CHARACTERISTICS_BAR_WIDTH+radius and y<=CHARACTERISTICS_BAR_HEIGHT+radius): y-=SPEED_OF_CHARACTER 
-        if pressed[pygame.K_DOWN] and y<HEIGHT-radius: y+=SPEED_OF_CHARACTER
-        if pressed[pygame.K_LEFT] and x>radius and not (x<=CHARACTERISTICS_BAR_WIDTH+radius and y<=CHARACTERISTICS_BAR_HEIGHT+radius): x-=SPEED_OF_CHARACTER
-        if pressed[pygame.K_RIGHT] and x<WIDTH-radius: x+=SPEED_OF_CHARACTER
-
         pygame.draw.rect(screen, BLACK, (0,0, CHARACTERISTICS_BAR_WIDTH, CHARACTERISTICS_BAR_HEIGHT))
 
         #после добавки спрайтов зданий эти прямоугольники нужно убрать
         pygame.draw.rect(screen, WHITE, (CHARACTERISTICS_BAR_WIDTH+200,50, 350, 200))
         pygame.draw.rect(screen, BLUE, (CHARACTERISTICS_BAR_WIDTH+750,50, 350, 200))
-        pygame.draw.rect(screen, BLUE, (CHARACTERISTICS_BAR_WIDTH+200,400, 350, 200))
-        pygame.draw.rect(screen, BLUE, (CHARACTERISTICS_BAR_WIDTH+750,400, 350, 200))
+        pygame.draw.rect(screen, BLUE, (CHARACTERISTICS_BAR_WIDTH+200,450, 350, 200))
+        pygame.draw.rect(screen, BLUE, (CHARACTERISTICS_BAR_WIDTH+750,450, 350, 200))
         
         #здания
         screen.blit(kbtu_small, kbtu_small_rect)
         #screen.blit(dormitory_big, dormitory_big_rect)
 
-
-
-
         screen.blit(S1.image, S1.rect)
         S1.move()
 
-
-
-
-
-        #pygame.draw.circle(screen,GREEN,(x,y),radius)
 
         knowledge_bar.draw(screen)
         sleep_bar.draw(screen)
@@ -152,8 +155,10 @@ while True:
         happiness_bar.draw(screen)
 
         #проверка коллизий и действия
-        if S1.rect.colliderect(kbtu_small_rect):
-            screen.fill(WHITE)
+
+            
+
+              
 
 
     else:
