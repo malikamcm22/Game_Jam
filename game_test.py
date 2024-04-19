@@ -104,18 +104,6 @@ satiety = pygame.transform.scale(satiety, (70, 70))
 satiety_position_rect = satiety.get_rect()
 satiety_position_rect.center = (15, 90)
 
-
-x_margin_for_bars = 30
-knowledge_bar = Bar(x_margin_for_bars,10,200,25,100,BROWN)
-knowledge_bar.unit = 0
-sleep_bar = Bar(x_margin_for_bars,45,200,25,100,BLUE)
-satiety_bar = Bar(x_margin_for_bars,80,200,25,100,RED)
-happiness_bar = Bar(x_margin_for_bars,115,200,25,100,YELLOW)
-
-
-
-
-
 #звуки кнопок и зданий
 knopka = pygame.mixer.Sound("zvuk-knopki.mp3")
 magazin_sound = pygame.mixer.Sound("cash_register.mp3")
@@ -125,7 +113,12 @@ dormitory_sound = pygame.mixer.Sound("hrap.mp3")
 screen = pygame.display.set_mode((WIDTH,HEIGHT))
 clock = pygame.time.Clock()
 
-
+x_margin_for_bars = 30
+knowledge_bar = Bar(x_margin_for_bars,10,200,25,100,BROWN)
+knowledge_bar.unit = 0
+sleep_bar = Bar(x_margin_for_bars,45,200,25,100,BLUE)
+satiety_bar = Bar(x_margin_for_bars,80,200,25,100,RED)
+happiness_bar = Bar(x_margin_for_bars,115,200,25,100,YELLOW)
 
 #Ingame timer
 game_time_sec = -1
@@ -140,55 +133,102 @@ game_time_rect.center = (120 , 240)
 TIME_COUNT_SEC = pygame.USEREVENT + 2
 pygame.time.set_timer(TIME_COUNT_SEC, 1000)
 
-# Определяем кнопки заранее
-yes_button = pygame.Rect(650, 350, 100, 50)  
-no_button = pygame.Rect(900, 350, 100, 50)
-
-collected_points_text = font_very_small.render("If you enter you will get:", True, (0, 0, 0))
-collected_points_text_rect = collected_points_text.get_rect(center=(WIDTH//2 + 75, HEIGHT//2 - 150))
-
-def ask_confirmation(screen, confirmation_text, confirmation_text_rect):
-            pygame.draw.rect(screen, (0, 255, 0), yes_button)
-
-            pygame.draw.rect(screen, (0, 255, 0), yes_button)
-            pygame.draw.rect(screen, (255, 0, 0), no_button)
-            pygame.draw.rect(screen, BLUE, (WIDTH//2 - 100, HEIGHT//2 - 200, 350, 200))
-
-            screen.blit(collected_points_text, collected_points_text_rect)
-            
-            screen.blit(confirmation_text, confirmation_text_rect)
-            pygame.display.flip()
-
+#кнопки подтверждения
+arrow_up = pygame.image.load('arrow up.png')
+arrow_down = pygame.image.load('arrow down.png')
+arrow_up_rect = arrow_up.get_rect()
+arrow_up_rect.center = (685, 155)
+arrow_down_rect = arrow_down.get_rect()
+arrow_down_rect.center = (695, 155)
+"""
+flag_kbtu = 0
+flag_kbtu2 = 0
+"""
 gaming = False
 course_counter = 1
 flag_buttons = 0
-confirmation = None
 while True:
     clock.tick(FPS)
     pressed = pygame.key.get_pressed()
     screen.fill(BG_COLOR)
     for event in pygame.event.get():
-        #условия для выхода из игры
         if event.type == pygame.QUIT or pressed[pygame.K_ESCAPE]:
             pygame.quit()
             sys.exit()
 
-        #условия для кнопок подтверждения
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_pos = event.pos
-            if yes_button.collidepoint(mouse_pos):
-                confirmation = True
-            elif no_button.collidepoint(mouse_pos):
-                confirmation = False
-
-        #условия для счетчика времени
         if event.type == TIME_COUNT_SEC and gaming == True:
                 game_time_sec += 1
                 if game_time_sec == 60 and gaming == True:
                     game_time_min += 1
                     game_time_sec = 0
+                
 
-        #условия проигрыша
+        if S1.rect.colliderect(kbtu_outside_small_rect):
+                """
+            #текстовое поле при косании со зданием
+            pygame.draw.rect(screen, BLACK, (675, 145, 250, 100))
+            KBTU_text = game_time_fonts.render("this is \n KBTU univercity", True, (0, 0, 0))
+            screen.blit(KBTU_text, (700, 170))
+            screen.blit(arrow_up, arrow_up_rect)
+            screen.blit(arrow_down, arrow_down_rect)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    mouse_pos = event.pos
+                    if arrow_up_rect.collidepoint(mouse_pos):
+                        flag_kbtu2 = 1
+                    if arrow_down_rect.collidepoint(mouse_pos):
+                        flag_kbtu2 = 0
+
+            if flag_kbtu2 == 1:
+                """
+                if knowledge_bar.unit<100:
+                    if knowledge_bar.unit+50>=100:
+                        knowledge_bar.unit += 50
+                        course_counter += 1
+                        knowledge_bar.unit -= 100
+                        if course_counter >= 5:
+                            screen.fill("red")
+                            screen.blit(win_font, (WIDTH//2- 100, HEIGHT//2 -100))
+                            game_win_time = game_time_fonts.render(f"Overall Time: {game_time_min}:{game_time_sec}", True, (0, 0, 0))
+                            screen.blit(game_win_time, (WIDTH//2- 100, HEIGHT//2))
+                            pygame.display.flip()
+                            time.sleep(3)
+                            pygame.quit()
+                            sys.exit()
+                    else:
+                        knowledge_bar.unit += 50
+                    if sleep_bar.unit>=2:
+                        sleep_bar.unit-=2
+                    if satiety_bar.unit>=2:
+                        satiety_bar.unit-=2
+                    if happiness_bar.unit>=2:
+                        happiness_bar.unit-=2 
+                screen.blit(kbtu_inside, kbtu_inside_rect)
+                kbtu_sound.play()
+                pygame.display.flip()
+                S1.rect.center = (625, HEIGHT//2)
+                time.sleep(2)
+                
+
+        
+        if S1.rect.colliderect(dormitory_outside_small_rect):
+            if sleep_bar.unit + 40 <100:
+                sleep_bar.unit += 40
+            if knowledge_bar.unit>=10:
+                knowledge_bar.unit-=10
+            if satiety_bar.unit>=2:
+                satiety_bar.unit-=2
+            if happiness_bar.unit>=2:
+                happiness_bar.unit-=2
+            else:
+                sleep_bar.unit = 100
+            
+            screen.blit(dormitory_inside, dormitory_inside_rect)
+            dormitory_sound.play()
+            pygame.display.flip()
+            S1.rect.center = (1175, HEIGHT//2)
+            time.sleep(2)
+
         if sleep_bar.unit <= 0 or satiety_bar.unit <= 0 or happiness_bar.unit <= 0:
             screen.fill("red")
             screen.blit(lose_font, (WIDTH//2- 100, HEIGHT//2 -100))
@@ -227,124 +267,30 @@ while True:
         screen.blit(kbtu_outside_small, kbtu_outside_small_rect)
         screen.blit(dormitory_outside_small, dormitory_outside_small_rect)
 
+        #screen.blit(S1.image, S1.rect)
+
         S1.move()
         S1.draw(screen)
 
-        #числовые показатели статистики
-        knowledge_points = font_small.render(f"{knowledge_bar.unit}", True, (0, 0, 0))
-        knowledge_points_rect = knowledge_points.get_rect(center = (120, 20))
-        sleep_points = font_small.render(f"{sleep_bar.unit}", True, (0, 0, 0))
-        sleep_points_rect = sleep_points.get_rect(center = (120, 55))
-        satiety_points = font_small.render(f"{satiety_bar.unit}", True, (0, 0, 0))
-        satiety_points_rect = satiety_points.get_rect(center = (120, 90))
-        happiness_points = font_small.render(f"{happiness_bar.unit}", True, (0, 0, 0))
-        happiness_points_rect = happiness_points.get_rect(center = (120, 125))
 
-        #статистика
         knowledge_bar.draw(screen)
-        screen.blit(knowledge_points, knowledge_points_rect)
-
         sleep_bar.draw(screen)
-        screen.blit(sleep_points, sleep_points_rect)
-
         satiety_bar.draw(screen)
-        screen.blit(satiety_points, satiety_points_rect)
-
         happiness_bar.draw(screen)
-        screen.blit(happiness_points, happiness_points_rect)
-
         screen.blit(knowledge, knowledge_position_rect)
         screen.blit(sleep, sleep_position_rect)
         screen.blit(satiety, satiety_position_rect)
-        #курс
+
         course_counter_text = font_small.render(f'Year: {course_counter}', True, (255, 255, 255))
         course_counter_text_rect = course_counter_text.get_rect()
         course_counter_text_rect.center = (120, 180)
         screen.blit(course_counter_text, course_counter_text_rect)
 
-        #Game timer
+        # Game timer
         game_time_text = game_time_fonts.render(f"Time: {game_time_min}:{game_time_sec}", True, (255, 255, 255))
         screen.blit(game_time_text, game_time_rect)
 
 
-        if S1.rect.colliderect(dormitory_outside_small_rect):
-            confirmation_text = font_small.render("BUILDING: Dormitory", True, (0, 0, 0))
-            confirmation_text_rect = confirmation_text.get_rect(center=(WIDTH//2 + 75, HEIGHT//2 - 175))
-            ask_confirmation(screen, confirmation_text, confirmation_text_rect)
-            
-            # Проверяем подтверждение после выхода из функции
-
-            if confirmation:
-                if sleep_bar.unit + 40 < 100:
-                    sleep_bar.unit += 40
-                    if knowledge_bar.unit >= 10:
-                        knowledge_bar.unit -= 10
-                    if satiety_bar.unit >= 2:
-                        satiety_bar.unit -= 2
-                    if happiness_bar.unit >= 2:
-                        happiness_bar.unit -= 2
-                else:
-                    sleep_bar.unit = 100
-                    if knowledge_bar.unit >= 10:
-                        knowledge_bar.unit -= 10
-                    if satiety_bar.unit >= 2:
-                        satiety_bar.unit -= 2
-                    if happiness_bar.unit >= 2:
-                        happiness_bar.unit -= 2
-                
-                screen.blit(dormitory_inside, dormitory_inside_rect)
-                dormitory_sound.play()
-                pygame.display.flip()
-                S1.rect.center = (1175, HEIGHT//2)
-                time.sleep(2)
-                game_time_sec -= 2
-                confirmation = None
-            elif confirmation == False:
-                confirmation = None
-                S1.rect.center = (1175, HEIGHT//2)
-                pass
-
-        
-        if S1.rect.colliderect(kbtu_outside_small_rect):
-            confirmation_text = font_small.render("BUILDING: KBTU", True, (0, 0, 0))
-            confirmation_text_rect = confirmation_text.get_rect(center=(WIDTH//2 + 50, HEIGHT//2 - 175))
-            ask_confirmation(screen, confirmation_text, confirmation_text_rect)
-            # Проверяем подтверждение после выхода из функции
-
-            if confirmation:
-                if knowledge_bar.unit<100:
-                    if knowledge_bar.unit+50>=100:
-                        knowledge_bar.unit += 50
-                        course_counter += 1
-                        knowledge_bar.unit -= 100
-                        if course_counter >= 5:
-                            screen.fill("red")
-                            screen.blit(win_font, (WIDTH//2- 100, HEIGHT//2 -100))
-                            game_win_time = game_time_fonts.render(f"Total Time allocated for graduation: {game_time_min}:{game_time_sec}", True, (0, 0, 0))
-                            screen.blit(game_win_time, (WIDTH//2- 200, HEIGHT//2))
-                            pygame.display.flip()
-                            time.sleep(3)
-                            pygame.quit()
-                            sys.exit()
-                    else:
-                        knowledge_bar.unit += 50
-                    if sleep_bar.unit>=2:
-                        sleep_bar.unit-=2
-                    if satiety_bar.unit>=2:
-                        satiety_bar.unit-=2
-                    if happiness_bar.unit>=2:
-                        happiness_bar.unit-=2 
-                screen.blit(kbtu_inside, kbtu_inside_rect)
-                kbtu_sound.play()
-                pygame.display.flip()
-                S1.rect.center = (625, HEIGHT//2)
-                time.sleep(2)
-                game_time_sec -= 2
-                confirmation = None
-            elif confirmation == False:
-                confirmation = None
-                S1.rect.center = (625, HEIGHT//2)
-                pass
 
 
     else:

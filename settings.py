@@ -8,6 +8,12 @@ BLUE = (0,0,255)
 GREEN = (0,255,0)
 YELLOW = (255,255,0)
 BROWN = (150,75,0)
+font = pygame.font.SysFont("Verdana", 60)
+font_small = pygame.font.SysFont("Verdana", 30)
+font_very_small = pygame.font.SysFont("Verdana", 20)
+win_font = font.render("You Win!", True, BLACK)
+lose_font = font.render("You Failed!", True, BLACK)
+
 
 BG_COLOR = WHITE
 
